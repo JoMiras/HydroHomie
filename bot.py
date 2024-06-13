@@ -2,9 +2,16 @@ import discord
 from discord.ext import commands, tasks
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime, timedelta
+import logging
+import os
 
-# Initialize bot
+# Logging configuration
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize bot with intents necessary
 intents = discord.Intents.default()
+intents.message_content = True
 intents.typing = False
 intents.presences = False
 intents.members = True
@@ -19,10 +26,14 @@ voice_channel_active = False
 # Announce bot is online
 @bot.event
 async def on_ready():
-    channel = discord.utils.get(bot.get_all_channels(), name='general')  # Replace with your channel name
-    if channel:
-        await channel.send("I'm online and ready to assist!")
-    print(f'{bot.user} has connected to Discord!')
+    guild = discord.utils.get(bot.guilds, name='YOUR_GUILD_NAME')  # Replace with your guild name
+    if guild:
+        channel = discord.utils.get(guild.channels, name='general')  # Replace with your channel name
+        if channel:
+            await channel.send("I'm online and ready to assist!")
+        logger.info(f'{bot.user} has connected to Discord!')
+    else:
+        logger.error("Guild not found! Bot is not connected to the correct guild.")
 
 # Check voice channel status
 @tasks.loop(minutes=1)
@@ -44,7 +55,7 @@ async def check_voice_channel():
 # Hydrate reminder task
 @tasks.loop(minutes=30)
 async def send_hydrate_reminder(channel):
-    await channel.send("Remember to drink water!")
+    await channel.send("Just reminding you to drink water! ^.^ ")
 
 # Event to handle user joining or leaving voice channel
 @bot.event
@@ -56,6 +67,7 @@ async def on_voice_state_update(member, before, after):
 # Custom reminder command
 @bot.command(name='remindMe')
 async def remind_me(ctx, time: str, *, reminder: str):
+    await ctx.send(f"Received remindMe command with time: {time} and reminder: {reminder}")
     user = ctx.message.author
     delay = int(time[:-1])
     unit = time[-1]
@@ -72,9 +84,13 @@ async def remind_me(ctx, time: str, *, reminder: str):
 
     remind_time = datetime.now() + delta
     scheduler.add_job(send_custom_reminder, 'date', run_date=remind_time, args=[ctx.channel, user, reminder])
+    logger.info(f"Scheduled reminder for {user} at {remind_time} with message: {reminder}")
     await ctx.send(f"Reminder set for {time}: {reminder}. I'll remind you!")
 
 async def send_custom_reminder(channel, user, reminder):
+    logger.info(f"Sending reminder to {user} with message: {reminder}")
     await channel.send(f"{user.mention}, reminder: {reminder}")
-
+# Run bot and start the scheduler
+scheduler.start()
+bot.run('MTI0OTU5NTY0ODM0OTgzMTMwMQ.GosFik.UTVpcD8PW0MpDx6i2sLZUNJT3UDdLH2NWQytGE')
 
