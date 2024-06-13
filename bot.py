@@ -90,7 +90,5 @@ async def remind_me(ctx, time: str, *, reminder: str):
 async def send_custom_reminder(channel, user, reminder):
     logger.info(f"Sending reminder to {user} with message: {reminder}")
     await channel.send(f"{user.mention}, reminder: {reminder}")
-# Run bot and start the scheduler
-scheduler.start()
-bot.run('MTI0OTU5NTY0ODM0OTgzMTMwMQ.GosFik.UTVpcD8PW0MpDx6i2sLZUNJT3UDdLH2NWQytGE')
+
 
