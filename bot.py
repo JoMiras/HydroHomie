@@ -26,7 +26,7 @@ voice_channel_active = False
 # Announce bot is online
 @bot.event
 async def on_ready():
-    guild = discord.utils.get(bot.guilds, name='YOUR_GUILD_NAME')  # Replace with your guild name
+    guild = discord.utils.get(bot.guilds, name='Bot Testing')  # Replace with your guild name
     if guild:
         channel = discord.utils.get(guild.channels, name='general')  # Replace with your channel name
         if channel:
@@ -90,3 +90,10 @@ async def remind_me(ctx, time: str, *, reminder: str):
 async def send_custom_reminder(channel, user, reminder):
     logger.info(f"Sending reminder to {user} with message: {reminder}")
     await channel.send(f"{user.mention}, reminder: {reminder}")
+
+scheduler.start()
+
+# Retrieve the token from the environment variable and run the bot
+token = os.getenv('DISCORD_TOKEN')
+print(token)  # Temporarily print the token to verify it's being read correctly
+bot.run(token)
